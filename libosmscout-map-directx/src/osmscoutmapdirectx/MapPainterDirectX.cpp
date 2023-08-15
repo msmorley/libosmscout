@@ -651,6 +651,7 @@ namespace osmscout
             std::string enc = glyph.glyph.character;
         #endif
             D2D1_MATRIX_3X2_F currentTransform;
+            D2D1_MATRIX_3X2_F rotatedTransform;
             m_pRenderTarget->GetTransform(&currentTransform);
             FLOAT size = style->GetSize() * fontSizeFactor * glyph.glyph.width;
             IDWriteTextFormat* tf = GetFont(projection, parameter, style->GetSize());
@@ -667,11 +668,17 @@ namespace osmscout
 
                 origin.x=glyph.position.GetX();
                 origin.y=glyph.position.GetY();
+                // attempt to apply rotation
+                rotatedTransform= D2D1::Matrix3x2F::Rotation(glyph.angle * 180.0 / M_PI, origin);
+                m_pRenderTarget->SetTransform(rotatedTransform * currentTransform);
 
                 m_pRenderTarget->DrawTextLayout(origin,
                                                 pDWriteTextLayout,
                                                 GetColorBrush(style->GetTextColor()));
-              pDWriteTextLayout->Release();
+              
+                m_pRenderTarget->SetTransform(currentTransform);
+
+                pDWriteTextLayout->Release();
             }
     }
 
@@ -1058,6 +1065,31 @@ namespace osmscout
     m_LabelLayouter(this)
   {
     pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
+    HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&m_pImagingFactory);
+    if (!SUCCEEDED(hr)) {
+      m_pImagingFactory = nullptr;
+    }
+  }
+
+   MapPainterDirectX::MapPainterDirectX(const StyleConfigRef& styleConfig,
+                                       ID2D1Factory* pDirect2dFactory,
+                                       IDWriteFactory* pWriteFactory, 
+                                       UINT dpi)
+    : MapPainter(styleConfig),
+    m_dashLessStrokeStyle(nullptr),
+    m_pDirect2dFactory(pDirect2dFactory),
+    m_pWriteFactory(pWriteFactory),
+    m_pRenderTarget(nullptr),
+    m_pImagingFactory(nullptr),
+    m_pRenderingParams(nullptr),
+    m_pPathTextRenderer(nullptr),
+    dpiX(dpi),
+    dpiY(dpi),
+    typeConfig(nullptr),
+    m_LabelLayouter(this)
+  {
+      dpiX= dpi;
+      dpiY= dpi;
     HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&m_pImagingFactory);
     if (!SUCCEEDED(hr)) {
       m_pImagingFactory = nullptr;

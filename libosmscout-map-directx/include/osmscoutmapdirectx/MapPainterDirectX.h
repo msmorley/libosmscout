@@ -234,6 +234,11 @@ namespace osmscout {
     MapPainterDirectX(const StyleConfigRef &styleConfig,
                       ID2D1Factory *pDirect2dFactory,
                       IDWriteFactory *pWriteFactory);
+    
+    MapPainterDirectX(const StyleConfigRef &styleConfig,
+                      ID2D1Factory *pDirect2dFactory,
+                      IDWriteFactory *pWriteFactory,
+                      UINT dpi);
 
     ~MapPainterDirectX() override;
 
