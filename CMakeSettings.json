@@ -9,7 +9,24 @@
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
-      "ctestCommandArgs": ""
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "OSMSCOUT_BUILD_MAP_CAIRO",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "BUILD_SHARED_LIBS",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_WITH_OPENMP",
+          "value": "true",
+          "type": "BOOL"
+        }
+      ]
     },
     {
       "name": "x64-Release",
@@ -21,7 +38,28 @@
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
-      "variables": []
+      "variables": [
+        {
+          "name": "OSMSCOUT_BUILD_MAP_CAIRO",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "BUILD_SHARED_LIBS",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_WITH_OPENMP",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "VCPKG_MANIFEST_DIR",
+          "value": "C:/Source/Libraries/libosmscout/libosmscout/",
+          "type": "PATH"
+        }
+      ]
     }
   ]
 }

@@ -414,7 +414,11 @@ constexpr bool debugGroundTiles = false;
         double factor=projection.GetMagnification().GetLevel()-textStyle->GetScaleAndFadeMag().GetLevel();
 
         data.fontSize=textStyle->GetSize()*::pow(1.5,factor);
-        data.alpha=std::min(textStyle->GetAlpha()/factor, 1.0);
+        
+        if (factor != 0.0)
+            data.alpha = std::min(textStyle->GetAlpha() / factor, 1.0);
+        else
+            data.alpha = 1.0;
       }
       else if (textStyle->GetAutoSize()) {
         double height=std::abs(objectBox.GetHeight()*0.1);
