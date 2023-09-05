@@ -403,9 +403,8 @@ if(MARISA_FOUND)
     target_link_libraries(OSMScout ${MARISA_LIBRARIES})
 endif()
 
-if (ICONV_FOUND)
-    target_include_directories(OSMScout PRIVATE ${ICONV_INCLUDE_DIRS})
-    target_link_libraries(OSMScout ${ICONV_LIBRARIES})
+if (TARGET Iconv::Iconv)
+    target_link_libraries(OSMScout Iconv::Iconv)
 endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
@@ -463,3 +462,5 @@ if(APPLE AND OSMSCOUT_BUILD_FRAMEWORKS)
 
      install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/osmscout DESTINATION include FILES_MATCHING PATTERN "*.h" PATTERN "private/Config.h" EXCLUDE)
 endif()
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/osmscout/lib/CoreFeatures.h DESTINATION include/osmscout/lib)
