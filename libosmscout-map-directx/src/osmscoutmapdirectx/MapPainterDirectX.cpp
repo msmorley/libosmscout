@@ -1125,6 +1125,12 @@ namespace osmscout
       m_pImagingFactory->Release();
       m_pImagingFactory = nullptr;
     }
+
+    if (m_dashLessStrokeStyle != nullptr)
+    {
+        m_dashLessStrokeStyle->Release();
+        m_dashLessStrokeStyle = nullptr;
+    }
   }
 
   void MapPainterDirectX::DiscardDeviceResources()
