@@ -33,11 +33,11 @@
 
 #include <osmscoutmap/MapService.h>
 
+#include <osmscoutclient/DBInstance.h>
 #include <osmscoutclient/Settings.h>
 
-#include <osmscoutclientqt/MapManager.h>
-#include <osmscoutclientqt/DBInstance.h>
 #include <osmscoutclientqt/DBJob.h>
+#include <osmscoutclientqt/MapManager.h>
 
 namespace osmscout {
 
@@ -155,7 +155,7 @@ private:
   bool                               daylight;
 
   bool                               renderError;
-  QList<StyleError>                  styleErrors;
+  std::list<StyleError>              styleErrors;
 
   std::vector<std::string>           customPoiTypes;
 
@@ -187,7 +187,7 @@ protected:
 
   void registerCustomPoiTypes(TypeConfigRef typeConfig) const;
 
-  StyleConfigRef makeStyleConfig(TypeConfigRef typeConfig) const;
+  StyleConfigRef makeStyleConfig(TypeConfigRef typeConfig, bool suppressWarnings=false) const;
 
 public:
   DBThread(QThread *backgroundThread,
@@ -223,7 +223,7 @@ public:
     return stylesheetFilename;
   }
 
-  const QList<StyleError> &GetStyleErrors() const
+  const std::list<StyleError> &GetStyleErrors() const
   {
       return styleErrors;
   }

@@ -351,18 +351,24 @@ namespace osmscout {
   class OSMSCOUT_API Log
   {
   private:
-    Logger*    logger;
-    NoOpLogger noOpLogger;
-    bool       logDebug=false;
-    bool       logInfo=true;
-    bool       logWarn=true;
-    bool       logError=true;
+    std::shared_ptr<Logger> logger;
+    NoOpLogger              noOpLogger;
+    bool                    logDebug=false;
+    bool                    logInfo=true;
+    bool                    logWarn=true;
+    bool                    logError=true;
 
   public:
     Log();
-    ~Log();
+    Log(const Log &log) = default;
+    Log(Log &&log) = default;
 
-    void SetLogger(Logger* logger);
+    Log& operator=(const Log &log) = default;
+    Log& operator=(Log &&log) = default;
+
+    ~Log() = default;
+
+    void SetLogger(const std::shared_ptr<Logger> &logger);
 
      Log& Debug(bool state)
     {
@@ -420,7 +426,7 @@ namespace osmscout {
 
   /**
    * \ingroup Logging
-   * The one an donly global instance of the logger that should get used
+   * The one and only global instance of the logger that should get used
    * for all logging output.
    */
   extern OSMSCOUT_API Log log;
