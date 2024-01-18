@@ -25,6 +25,11 @@
           "name": "OSMSCOUT_BUILD_WITH_OPENMP",
           "value": "true",
           "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_EXTERN_MATLAB",
+          "value": "False",
+          "type": "BOOL"
         }
       ]
     },
@@ -58,6 +63,11 @@
           "name": "VCPKG_MANIFEST_DIR",
           "value": "C:/Source/Libraries/libosmscout/libosmscout/",
           "type": "PATH"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_EXTERN_MATLAB",
+          "value": "False",
+          "type": "BOOL"
         }
       ]
     }
