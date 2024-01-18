@@ -26,7 +26,8 @@
 
 #include <osmscoutmap/DataTileCache.h>
 
-#include <osmscoutclientqt/DBThread.h>
+#include <osmscoutclient/DBThread.h>
+
 #include <osmscoutclientqt/MapRenderer.h>
 #include <osmscoutclientqt/TileCache.h>
 #include <osmscoutclientqt/OsmTileDownloader.h>
@@ -78,17 +79,9 @@ private:
 
   QColor                        unknownColor;
 
-  Slot<OnlineTileProvider> onlineTileProviderSlot{
-    [this](const OnlineTileProvider &provider) { onlineTileProviderSignal(provider); }
-  };
-
-  Slot<bool> onlineTileEnabledSlot{
-    [this](const bool &b) { onlineTilesEnabledSignal(b); }
-  };
-
-  Slot<bool> offlineMapChangedSlot{
-    [this](const bool &b) { offlineMapChangedSignal(b); }
-  };
+  Slot<OnlineTileProvider> onlineTileProviderSlot{ std::bind(&TiledMapRenderer::onlineTileProviderSignal, this, std::placeholders::_1) };
+  Slot<bool> onlineTileEnabledSlot{ std::bind(&TiledMapRenderer::onlineTilesEnabledSignal, this, std::placeholders::_1) };
+  Slot<bool> offlineMapChangedSlot{ std::bind(&TiledMapRenderer::offlineMapChangedSignal, this, std::placeholders::_1) };
 
 signals:
   void onlineTileProviderSignal(OnlineTileProvider provider);
@@ -99,12 +92,12 @@ public slots:
   virtual void Initialize();
   virtual void InvalidateVisualCache();
   virtual void onStylesheetFilenameChanged();
+  virtual void onDatabaseLoaded(osmscout::GeoBox boundingBox);
 
   void onlineTileRequest(uint32_t zoomLevel, uint32_t xtile, uint32_t ytile);
   void offlineTileRequest(uint32_t zoomLevel, uint32_t xtile, uint32_t ytile);
   void tileDownloaded(uint32_t zoomLevel, uint32_t x, uint32_t y, QImage image, QByteArray downloadedData);
   void tileDownloadFailed(uint32_t zoomLevel, uint32_t x, uint32_t y, bool zoomLevelOutOfRange);
-  void onDatabaseLoaded(osmscout::GeoBox boundingBox);
   void onLoadJobFinished(QMap<QString,QMap<osmscout::TileKey,osmscout::TileRef>>);
 
   void onlineTileProviderChanged(const OnlineTileProvider &);

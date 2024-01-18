@@ -25,7 +25,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           update: true
-          install: "mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool mingw-w64-x86_64-libiconv
+          install: "mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
                     mingw-w64-x86_64-cmake mingw-w64-x86_64-extra-cmake-modules mingw-w64-x86_64-ninja
                     mingw-w64-x86_64-protobuf
                     mingw-w64-x86_64-libxml2
@@ -38,6 +38,7 @@ jobs:
         run: cmake --build build
       - name: Run tests
         run:  "PATH=$PATH:$PWD/libosmscout:$PWD/libosmscout-import:$PWD/libosmscout-map:$PWD/libosmscout-test
+               LC_ALL=C
                ctest -j 4 --output-on-failure --exclude-regex PerformanceTest"
         working-directory: build
 
@@ -54,7 +55,7 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           update: true
-          install: "mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool mingw-w64-x86_64-libiconv
+          install: "mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
                     mingw-w64-x86_64-meson mingw-w64-x86_64-ninja
                     mingw-w64-x86_64-protobuf
                     mingw-w64-x86_64-libxml2
@@ -69,6 +70,7 @@ jobs:
       - name: Build project
         run: meson compile -C debug
       - name: Run tests
-        run: meson test -C debug --print-errorlogs
+        run: "LC_ALL=C
+              meson test -C debug --print-errorlogs"
         env:
           LANG: en_US.utf8

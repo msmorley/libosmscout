@@ -27,12 +27,10 @@ StyleModule::StyleModule(QThread *thread,DBThreadRef dbThread):
     thread(thread),
     dbThread(dbThread)
 {
+  dbThread->databaseLoadFinished.Connect(dbLoadedSlot);
+  dbThread->stylesheetFilenameChanged.Connect(stylesheetFilenameChangeSlot);
 
-  connect(dbThread.get(), &DBThread::initialisationFinished,
-          this, &StyleModule::initialisationFinished);
-  connect(dbThread.get(), &DBThread::stylesheetFilenameChanged,
-          this, &StyleModule::stylesheetFilenameChanged);
-  connect(dbThread.get(), &DBThread::stylesheetFilenameChanged,
+  connect(this, &StyleModule::stylesheetFilenameChanged,
           this, &StyleModule::onStyleChanged,
           Qt::QueuedConnection);
 }
@@ -45,12 +43,13 @@ StyleModule::~StyleModule()
   if (thread!=nullptr){
     thread->quit();
   }
+  *alive=false;
 }
 
 void StyleModule::loadStyle(QString stylesheetFilename,
                             std::unordered_map<std::string,bool> stylesheetFlags)
 {
-  dbThread->LoadStyle(stylesheetFilename,
+  dbThread->LoadStyle(stylesheetFilename.toStdString(),
                       stylesheetFlags);
 }
 
@@ -60,12 +59,25 @@ void StyleModule::onStyleFlagsRequested(){
 
 void StyleModule::onStyleChanged()
 {
-  emit styleFlagsChanged(dbThread->GetStyleFlags());
+  QMap<QString, bool> qMap;
+  auto stdMap=dbThread->GetStyleFlags();
+  for (const auto &p: stdMap) {
+    qMap[QString::fromStdString(p.first)] = p.second;
+  }
+
+  emit styleFlagsChanged(qMap);
 }
 
 void StyleModule::onSetFlagRequest(QString key, bool value)
 {
-  dbThread->SetStyleFlag(key, value);
-  emit flagSet(key, value);
+  qDebug() << "Setting flag" << key << "to" << value;
+  auto thisAlive=alive;
+  dbThread->SetStyleFlag(key.toStdString(), value)
+    .OnComplete([this, key, value, thisAlive](const bool &){
+      if (*thisAlive) { // avoid to call slot with deleted object
+        emit flagSet(key, value);
+      }
+      qDebug() << "Flag" << key << "setup done (" << value << ")";
+    });
 }
 }

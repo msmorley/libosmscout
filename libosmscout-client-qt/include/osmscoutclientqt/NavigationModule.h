@@ -21,8 +21,8 @@
  */
 
 #include <osmscoutclient/Settings.h>
+#include <osmscoutclient/DBThread.h>
 
-#include <osmscoutclientqt/DBThread.h>
 #include <osmscoutclientqt/Router.h>
 
 #include <osmscout/navigation/Navigation.h>
@@ -44,6 +44,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QMediaPlayer>
+#include <QDateTime>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
   #include <QMediaPlaylist>
@@ -133,7 +134,7 @@ private:
 private:
   QThread     *thread;
   SettingsRef settings;
-  DistanceUnitSystem       units{Locale::ByEnvironment().GetDistanceUnits()}; // TODO: make possible to override
+  DistanceUnitSystem units{Locale::ByEnvironmentSafe().GetDistanceUnits()}; // TODO: make possible to override
   DBThreadRef dbThread;
   QTimer      timer;
   std::optional<Bearing> lastBearing;

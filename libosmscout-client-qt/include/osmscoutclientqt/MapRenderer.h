@@ -23,10 +23,11 @@
 
 #include <osmscoutmap/DataTileCache.h>
 
-#include <osmscoutclientqt/DBThread.h>
+#include <osmscoutclient/DBThread.h>
 
 #include <osmscoutclientqt/ClientQtImportExport.h>
 #include <osmscoutclientqt/OverlayObject.h>
+#include <osmscoutclientqt/DBLoadJob.h>
 
 #include <QObject>
 #include <QSettings>
@@ -38,7 +39,7 @@ namespace osmscout {
 /**
  * \ingroup QtAPI
  */
-class OSMSCOUT_CLIENT_QT_API DBRenderJob : public DBJob{
+class OSMSCOUT_CLIENT_QT_API DBRenderJob : public QObject, public DBJob{
   Q_OBJECT
 private:
   osmscout::MercatorProjection renderProjection;
@@ -117,6 +118,8 @@ signals:
   void fontSizeSignal(double);
   void showAltLanguageSignal(bool);
   void unitsSignal(QString);
+  void stylesheetFilenameChanged();
+  void databaseLoadFinished(const osmscout::GeoBox &geoBox);
 
 private:
   // slots
@@ -156,11 +159,15 @@ private:
     }
   };
 
+  Slot<> stylesheetFilenameChangedSlot{ std::bind(&MapRenderer::stylesheetFilenameChanged, this) };
+  Slot<GeoBox> databaseLoadFinishedSlot{ std::bind(&MapRenderer::databaseLoadFinished, this, std::placeholders::_1) };
+
 public slots:
   virtual void Initialize() = 0;
 
   virtual void InvalidateVisualCache() = 0;
   virtual void onStylesheetFilenameChanged();
+  virtual void onDatabaseLoaded(osmscout::GeoBox boundingBox) = 0;
 
   virtual void onMapDPIChange(double dpi);
   virtual void onRenderSeaChanged(bool);

@@ -1,5 +1,4 @@
 osmscoutclientqtSrc = [
-            'src/osmscoutclientqt/DBThread.cpp',
             'src/osmscoutclientqt/ElevationChartWidget.cpp',
             'src/osmscoutclientqt/ElevationModule.cpp',
             'src/osmscoutclientqt/RoutingModel.cpp',
@@ -34,7 +33,7 @@ osmscoutclientqtSrc = [
             'src/osmscoutclientqt/MapStyleModel.cpp',
             'src/osmscoutclientqt/StyleFlagsModel.cpp',
             'src/osmscoutclientqt/OSMScoutQt.cpp',
-            'src/osmscoutclientqt/DBJob.cpp',
+            'src/osmscoutclientqt/DBLoadJob.cpp',
             'src/osmscoutclientqt/LookupModule.cpp',
             'src/osmscoutclientqt/SearchModule.cpp',
             'src/osmscoutclientqt/StyleModule.cpp',
@@ -47,7 +46,6 @@ osmscoutclientqtSrc = [
             'src/osmscoutclientqt/TiledMapOverlay.cpp',
             'src/osmscoutclientqt/TiledRenderingHelper.cpp',
             'src/osmscoutclientqt/NearPOIModel.cpp',
-            'src/osmscoutclientqt/POILookupModule.cpp',
             'src/osmscoutclientqt/InstalledMapsModel.cpp',
             'src/osmscoutclientqt/Voice.cpp',
             'src/osmscoutclientqt/VoiceManager.cpp',

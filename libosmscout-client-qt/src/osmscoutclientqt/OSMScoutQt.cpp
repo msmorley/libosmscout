@@ -22,11 +22,11 @@
 #include <osmscoutmap/DataTileCache.h>
 
 #include <osmscoutclient/Settings.h>
+#include <osmscoutclient/DBThread.h>
 
 #include <osmscoutclientqt/OSMScoutQt.h>
 #include <osmscoutclientqt/QtSettingsStorage.h>
 #include <osmscoutclientqt/QmlSettings.h>
-#include <osmscoutclientqt/DBThread.h>
 #include <osmscoutclientqt/MapWidget.h>
 #include <osmscoutclientqt/ElevationChartWidget.h>
 #include <osmscoutclientqt/PlaneMapRenderer.h>
@@ -191,7 +191,6 @@ void OSMScoutQt::RegisterQmlTypes(const char *uri,
                                   int versionMinor)
 {
   // register osmscout + standard types for usage in Qt signals/slots
-  qRegisterMetaType<DatabaseLoadedResponse>("DatabaseLoadedResponse");
   qRegisterMetaType<LocationEntryRef>("LocationEntryRef");
   qRegisterMetaType<osmscout::BreakerRef>("osmscout::BreakerRef");
   qRegisterMetaType<osmscout::Distance>("osmscout::Distance");
@@ -212,6 +211,7 @@ void OSMScoutQt::RegisterQmlTypes(const char *uri,
   qRegisterMetaType<QtRouteData>("QtRouteData");
   qRegisterMetaType<uint32_t>("uint32_t");
   qRegisterMetaType<uint64_t>("uint64_t");
+  qRegisterMetaType<size_t>("size_t");
   qRegisterMetaType<AdminRegionInfoRef>("AdminRegionInfoRef");
   qRegisterMetaType<QList<AdminRegionInfoRef>>("QList<AdminRegionInfoRef>");
   qRegisterMetaType<std::unordered_map<std::string,bool>>("std::unordered_map<std::string,bool>");
@@ -307,27 +307,19 @@ OSMScoutQt::OSMScoutQt(SettingsRef settings,
     customPoiTypeVector.push_back(typeName.toStdString());
   }
 
-  QThread *thread=makeThread("DBThread");
-  dbThread=std::make_shared<DBThread>(thread,
-                                      basemapLookupDirectory,
-                                      iconDirectory,
+  dbThread=std::make_shared<DBThread>(basemapLookupDirectory.toStdString(),
+                                      iconDirectory.toStdString(),
                                       settings,
                                       mapManager,
                                       customPoiTypeVector);
 
-  connect(thread, &QThread::started,
-          dbThread.get(), &DBThread::Initialize);
+  dbThread->Initialize();
 
-  dbThread->moveToThread(thread);
-
-  thread->start();
-
-  // move itself to DBThread event loop,
-  // we need to receive threadFinished slot
-  // even main loop is shutdown
-
-  // DBThread is responsible for thread shutdown
-  this->moveToThread(thread);
+  // move itself to own event loop,
+  // we need to receive slots
+  // even when main loop is shutdown
+  // QThread *thread=makeThread("OSMScoutQt");
+  // this->moveToThread(thread);
 }
 
 OSMScoutQt::~OSMScoutQt()
@@ -424,11 +416,7 @@ StyleModule* OSMScoutQt::MakeStyleModule()
 
 POILookupModule *OSMScoutQt::MakePOILookupModule()
 {
-  QThread *thread=makeThread("POILookupModule");
-  POILookupModule *module=new POILookupModule(thread,dbThread);
-  module->moveToThread(thread);
-  thread->start();
-  return module;
+  return new POILookupModule(dbThread);
 }
 
 ElevationModule *OSMScoutQt::MakeElevationModule()

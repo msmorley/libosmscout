@@ -1,9 +1,7 @@
 osmscoutclientqtIncDir = include_directories('.')
 
 osmscoutclientqtHeader = [
-            'osmscoutclientqt/AdminRegionInfo.h',
             'osmscoutclientqt/ClientQtImportExport.h',
-            'osmscoutclientqt/DBThread.h',
             'osmscoutclientqt/ElevationChartWidget.h',
             'osmscoutclientqt/ElevationModule.h',
             'osmscoutclientqt/RoutingModel.h',
@@ -38,7 +36,7 @@ osmscoutclientqtHeader = [
             'osmscoutclientqt/MapStyleModel.h',
             'osmscoutclientqt/StyleFlagsModel.h',
             'osmscoutclientqt/OSMScoutQt.h',
-            'osmscoutclientqt/DBJob.h',
+            'osmscoutclientqt/DBLoadJob.h',
             'osmscoutclientqt/LookupModule.h',
             'osmscoutclientqt/SearchModule.h',
             'osmscoutclientqt/StyleModule.h',
@@ -51,7 +49,6 @@ osmscoutclientqtHeader = [
             'osmscoutclientqt/TiledMapOverlay.h',
             'osmscoutclientqt/TiledRenderingHelper.h',
             'osmscoutclientqt/NearPOIModel.h',
-            'osmscoutclientqt/POILookupModule.h',
             'osmscoutclientqt/InstalledMapsModel.h',
             'osmscoutclientqt/Voice.h',
             'osmscoutclientqt/VoiceManager.h',

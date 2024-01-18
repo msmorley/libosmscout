@@ -22,6 +22,8 @@
 
 #include <osmscoutmapqt/MapPainterQt.h>
 
+#include <QDebug>
+
 namespace osmscout {
 
 MapRenderer::MapRenderer(QThread *thread,
@@ -48,6 +50,8 @@ MapRenderer::MapRenderer(QThread *thread,
   settings->fontSizeChanged.Connect(fontSizeSlot);
   settings->showAltLanguageChanged.Connect(showAltLanguageSlot);
   settings->unitsChanged.Connect(unitsSlot);
+  dbThread->stylesheetFilenameChanged.Connect(stylesheetFilenameChangedSlot);
+  dbThread->databaseLoadFinished.Connect(databaseLoadFinishedSlot);
 
   connect(this, &MapRenderer::mapDpiChangeSignal,
           this, &MapRenderer::onMapDPIChange,
@@ -70,8 +74,11 @@ MapRenderer::MapRenderer(QThread *thread,
 
   connect(thread, &QThread::started,
           this, &MapRenderer::Initialize);
-  connect(dbThread.get(), &DBThread::stylesheetFilenameChanged,
+  connect(this, &MapRenderer::stylesheetFilenameChanged,
           this, &MapRenderer::onStylesheetFilenameChanged,
+          Qt::QueuedConnection);
+  connect(this, &MapRenderer::databaseLoadFinished,
+          this, &MapRenderer::onDatabaseLoaded,
           Qt::QueuedConnection);
 }
 
