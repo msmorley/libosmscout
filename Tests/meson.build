@@ -355,6 +355,7 @@ if buildMapCairo or buildMapQt or buildMapAgg or buildMapOpenGL
     includes += osmscoutmapopenglIncDir
     deps += openGLDep
     deps += glfwDep
+    deps += glmDep
     deps += glewDep
     links += osmscoutmapopengl
   endif
@@ -403,6 +404,16 @@ ScreenBox = executable('ScreenBox',
              install_dir: testInstallDir)
 
 test('Check ScreenBox functionality', ScreenBox)
+
+ScreenMaskTest = executable('ScreenMaskTest',
+                       'src/ScreenMaskTest.cpp',
+                       include_directories: [testIncDir, osmscoutmapIncDir, osmscoutIncDir],
+                       dependencies: [mathDep, openmpDep],
+                       link_with: [osmscoutmap, osmscout],
+                       install: true,
+                       install_dir: testInstallDir)
+
+test('Check ScreenMask functionality', ScreenMaskTest)
 
 StdByteTest = executable('StdByteTest',
              'src/StdByteTest.cpp',

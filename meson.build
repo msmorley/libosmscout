@@ -2,15 +2,15 @@ project('libosmscout',
         'cpp',
         version: 'latest',
         meson_version: '>=0.63.0',
-        default_options: ['cpp_std=c++17', 'buildtype=debugoptimized', 'warning_level=3'],
+        default_options: ['cpp_std=c++20', 'buildtype=debugoptimized', 'warning_level=3'],
         license: ['LGPL'])
 
 libraryVersion='1.1.1'
 
 if build_machine.system()=='darwin'
-  add_languages(['objcpp'])
+  add_languages('objcpp', native: false, required: true)
   # Workarounds...
-  add_project_arguments(['-fobjc-arc', '-std=c++17'], language: 'objcpp')
+  add_project_arguments(['-fobjc-arc', '-std=c++20'], language: 'objcpp')
   add_project_link_arguments(['-dynamiclib'], language: 'objcpp')
 endif
 
@@ -40,7 +40,7 @@ if compiler.get_id()=='msvc'
   add_project_arguments('-D_CRT_NONSTDC_NO_DEPRECATE', language: 'cpp')
   add_project_arguments('-D_USE_MATH_DEFINES', language: 'cpp')
 
-  # Fast floating point processing
+  # Fast floatinglmg point processing
   add_project_arguments('/fp:fast', language: 'cpp')
 
   # Disable some over-eager compiler warnings
@@ -359,7 +359,10 @@ if buildImport
     subdir('Import')
 endif
 
-subdir('Demos')
+if get_option('buildDemos')
+  subdir('Demos')
+endif
+
 subdir('DumpData')
 subdir('PublicTransportMap')
 
@@ -447,7 +450,7 @@ summary({
 summary({
   'BasemapImport': buildImport,
   'Import': buildImport,
-  'Demos': true,
+  'Demos': get_option('buildDemos'),
   'DumpData': true,
   'OSMScout2': buildOSMScout2,
   'StyleEditor': buildStyleEditor,

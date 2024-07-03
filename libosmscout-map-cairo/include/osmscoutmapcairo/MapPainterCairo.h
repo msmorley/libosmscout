@@ -27,6 +27,8 @@
 
 #if defined(__WIN32__) || defined(WIN32)
   #include <cairo.h>
+#elif defined(__APPLE__) && __APPLE__
+  #include <cairo.h>
 #else
   #include <cairo/cairo.h>
 #endif
@@ -131,11 +133,11 @@ namespace osmscout {
                                        bool enableWrapping = false,
                                        bool contourLabel = false);
 
-    osmscout::DoubleRectangle GlyphBoundingBox(const CairoNativeGlyph &glyph) const;
+    osmscout::ScreenVectorRectangle GlyphBoundingBox(const CairoNativeGlyph &glyph) const;
 
     void DrawLabel(const Projection& projection,
                    const MapParameter& parameter,
-                   const DoubleRectangle& labelRectangle,
+                   const ScreenVectorRectangle& labelRectangle,
                    const LabelData& label,
                    const CairoNativeLabel& layout);
 
@@ -155,6 +157,7 @@ namespace osmscout {
      */
     void RegisterRegularLabel(const Projection& projection,
                               const MapParameter& parameter,
+                              const ObjectFileRef& ref,
                               const std::vector<LabelData>& labels,
                               const Vertex2D& position,
                               double objectWidth) override;
@@ -164,6 +167,7 @@ namespace osmscout {
      */
     void RegisterContourLabel(const Projection& projection,
                               const MapParameter& parameter,
+                              const ObjectFileRef& ref,
                               const PathLabelData& label,
                               const LabelPath& labelPath) override;
 
