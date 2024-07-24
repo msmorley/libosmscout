@@ -6,6 +6,10 @@
     "zlib",
     "libiconv",
     "libxml2",
+    "libpng",
+    "glew",
+    "glm",
+    "freetype",
     "protobuf"
   ]
 }
