@@ -19,6 +19,7 @@
 /cmake-build-debug
 .vscode
 .cache
+.vs
 
 # Backup
 **/*~
@@ -42,3 +43,6 @@
 /Tests/*.html
 /Tests/Testing/Temporary/*
 /Tests/data/testregion/stats.dot
+
+#vcpkg
+/vcpkg_installed/
