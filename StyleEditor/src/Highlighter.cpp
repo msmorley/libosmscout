@@ -18,180 +18,223 @@
  */
 
 #include <Highlighter.h>
+#include <StyleAnalyser.h>
+#include <osmscoutclientqt/OSMScoutQt.h>
+
 #include <QtGui>
 
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
+  connect(parent, SIGNAL(contentsChange(int,int,int)),
+          this, SLOT(onContentsChange(int,int,int)));
+}
+
+Highlighter::~Highlighter()
+{
+  stopStyleAnalyser();
 }
 
 void Highlighter::updateRules()
 {
-    HighlightingRule rule;
+  HighlightingRule rule;
 
-    highlightingRules.clear();
+  highlightingRules.clear();
 
-    kwSectionFormat.setFontWeight(QFont::Bold);
-    kwSectionFormat.setForeground(QColor("#3000ff"));
-    rule.pattern = QRegExp("OSS|ORDER\\sWAYS|CONST|END");
-    rule.pattern.setMinimal(true);
-    rule.format = kwSectionFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("OSS|FLAG|ORDER\\sWAYS|CONST|STYLE|END");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#3000ff"));
+  highlightingRules.append(rule);
 
-    kwFormat.setFontWeight(QFont::Bold);
-    kwFormat.setForeground(QColor("#7070ff"));
-    rule.pattern = QRegExp("GROUP|COLOR|SYMBOL|UINT");
-    rule.pattern.setMinimal(true);
-    rule.format = kwFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("GROUP|COLOR|SYMBOL|UINT|WIDTH");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#7070ff"));
+  highlightingRules.append(rule);
 
-    kwGeomFormat.setFontWeight(QFont::Bold);
-    kwGeomFormat.setForeground(QColor("#aa70ff"));
-    rule.pattern = QRegExp("POLYGON|CIRCLE|RECTANGLE");
-    rule.pattern.setMinimal(true);
-    rule.format = kwGeomFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("POLYGON|CIRCLE|RECTANGLE");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#aa70ff"));
+  highlightingRules.append(rule);
 
-    kwTYPEFormat.setFontWeight(QFont::Bold);
-    kwTYPEFormat.setForeground(QColor("#994000"));
-    rule.pattern = QRegExp("TYPE");
-    rule.pattern.setMinimal(true);
-    rule.format = kwTYPEFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("TYPE");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#994000"));
+  highlightingRules.append(rule);
 
-    kwMAGFormat.setFontWeight(QFont::Bold);
-    kwMAGFormat.setForeground(QColor("#ff0050"));
-    rule.pattern = QRegExp("MAG");
-    rule.pattern.setMinimal(true);
-    rule.format = kwMAGFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("MAG");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#ff0050"));
+  highlightingRules.append(rule);
 
-    kwGEOFormat.setFontWeight(QFont::Bold);
-    kwGEOFormat.setForeground(QColor("#ff5050"));
-    rule.pattern = QRegExp("(NODE|WAY|AREA)[^A-Za-z]");
-    rule.pattern.setMinimal(true);
-    rule.format = kwGEOFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("(NODE|WAY|AREA)[^A-Za-z]");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#ff5050"));
+  highlightingRules.append(rule);
 
-    kwSIZEFormat.setFontWeight(QFont::Bold);
-    kwSIZEFormat.setForeground(QColor("#ff50ff"));
-    rule.pattern = QRegExp("SIZE");
-    rule.pattern.setMinimal(true);
-    rule.format = kwSIZEFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("SIZE");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#ff50ff"));
+  highlightingRules.append(rule);
 
-    kwTEXTICONFormat.setFontWeight(QFont::Bold);
-    kwTEXTICONFormat.setForeground(QColor("#ffb33d"));
-    rule.pattern = QRegExp("TEXT|ICON");
-    rule.pattern.setMinimal(true);
-    rule.format = kwTEXTICONFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("TEXT|ICON");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#ffb33d"));
+  highlightingRules.append(rule);
 
-    kwTUNNELBRIDGEFormat.setFontWeight(QFont::Bold);
-    kwTUNNELBRIDGEFormat.setForeground(QColor("#25a13b"));
-    rule.pattern = QRegExp("FEATURE");
-    rule.pattern.setMinimal(true);
-    rule.format = kwTUNNELBRIDGEFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("FEATURE");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#25a13b"));
+  highlightingRules.append(rule);
 
-    kwONEWAYFormat.setFontWeight(QFont::Bold);
-    kwONEWAYFormat.setForeground(QColor("#50ff50"));
-    rule.pattern = QRegExp("ONEWAY");
-    rule.pattern.setMinimal(true);
-    rule.format = kwONEWAYFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("ONEWAY");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#2ce838"));
+  highlightingRules.append(rule);
 
-    commentsFormat.setFontItalic(true);
-    commentsFormat.setForeground(QColor("#309030"));
-    rule.pattern = QRegExp("//.*");
-    rule.format = commentsFormat;
-    highlightingRules.append(rule);
+  rule.pattern = QRegExp("MODULE");
+  rule.pattern.setMinimal(true);
+  rule.format = QTextCharFormat();
+  rule.format.setFontWeight(QFont::Bold);
+  rule.format.setForeground(QColor("#820761"));
+  highlightingRules.append(rule);
 
-    errorFormat.setBackground(QBrush(QColor(255, 0, 0, 80), Qt::SolidPattern));
-    warningFormat.setBackground(QBrush(QColor(255, 255, 0, 50), Qt::SolidPattern));
+  commentFormat.setFontItalic(true);
+  commentFormat.setForeground(QColor("#309030"));
+  rule.pattern = QRegExp("//.*");
+  rule.format = commentFormat;
+  highlightingRules.append(rule);
 
-    multiLineCommentFormat.setFontItalic(true);
-    multiLineCommentFormat.setForeground(QColor("#309030"));
+  errorFormat.setBackground(QBrush(QColor(255, 0, 0, 30), Qt::SolidPattern));
+  warningFormat.setBackground(QBrush(QColor(255, 255, 0, 50), Qt::SolidPattern));
 }
 
 void Highlighter::highlightBlock(const QString &text)
 {
-    if (m_baseFontPointSize == 0.0) {
-            return;
+  int line = currentBlock().firstLineNumber()+1;
+  if (currentBlock().lineCount() == 1){
+    if (errorLines.contains(line)) {
+      setFormat(0, text.size(), errorFormat);
     }
-
-    int line = currentBlock().firstLineNumber()+1;
-    if (currentBlock().lineCount() == 1){
-      if (errorLines.contains(line)) {
-        setFormat(0, text.size(), errorFormat);
-      }
-      if (warningLines.contains(line)) {
-        setFormat(0, text.size(), warningFormat);
-      }
+    if (warningLines.contains(line)) {
+      setFormat(0, text.size(), warningFormat);
     }
+  }
 
-    foreach (const HighlightingRule &rule, highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
-            setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
-        }
+  foreach (const HighlightingRule &rule, highlightingRules) {
+    QRegExp expression(rule.pattern);
+    int index = expression.indexIn(text);
+    while (index >= 0) {
+      int length = expression.matchedLength();
+      setFormat(index, length, rule.format);
+      index = expression.indexIn(text, index + length);
     }
+  }
 
-    QRegExp commentStartExpression = QRegExp("/\\*");
-    QRegExp commentEndExpression = QRegExp("\\*/");
-    setCurrentBlockState(0);
-    int startIndex = 0;
+  QRegExp commentStartExpression = QRegExp("/\\*");
+  QRegExp commentEndExpression = QRegExp("\\*/");
+  setCurrentBlockState(0);
+  int startIndex = 0;
 
-    if (previousBlockState() != 1) {
-        startIndex = commentStartExpression.indexIn(text);
+  if (previousBlockState() != 1) {
+    startIndex = commentStartExpression.indexIn(text);
+  }
+
+  while (startIndex >= 0) {
+    int endIndex = commentEndExpression.indexIn(text, startIndex);
+    int commentLength;
+    if (endIndex == -1) {
+      setCurrentBlockState(1);
+      commentLength = text.length() - startIndex;
+    } else {
+      commentLength = endIndex - startIndex
+                      + commentEndExpression.matchedLength();
     }
-
-    while (startIndex >= 0) {
-        int endIndex = commentEndExpression.indexIn(text, startIndex);
-        int commentLength;
-        if (endIndex == -1) {
-            setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex
-                    + commentEndExpression.matchedLength();
-        }
-        setFormat(startIndex, commentLength, multiLineCommentFormat);
-        startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
-    }
+    setFormat(startIndex, commentLength, commentFormat);
+    startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
+  }
 }
 
-void Highlighter::setStyle(qreal baseFontPointSize)
+void Highlighter::setStyle()
 {
-    m_baseFontPointSize = baseFontPointSize;
-    this->updateRules();
-    this->rehighlight();
+  warningLines.clear();
+  errorLines.clear();
+  this->updateRules();
+  this->rehighlight();
+}
+
+void Highlighter::startStyleAnalyser()
+{
+  if (styleAnalyser)
+    return;
+
+  styleAnalyser = new StyleAnalyser("StyleAnalyser");
+
+  connect(this, SIGNAL(documentUpdated(QTextDocument*)),
+          styleAnalyser, SLOT(onDocumentUpdated(QTextDocument*)));
+  connect(styleAnalyser, SIGNAL(problematicLines(QSet<int>,QSet<int>)),
+          this, SLOT(onProblematicLines(QSet<int>,QSet<int>)),
+          Qt::QueuedConnection);
+
+  styleAnalyser->onDocumentUpdated(document());
+}
+
+void Highlighter::stopStyleAnalyser()
+{
+  if (!styleAnalyser)
+    return;
+
+  disconnect(this, SIGNAL(documentUpdated(QTextDocument*)),
+             styleAnalyser, SLOT(onDocumentUpdated(QTextDocument*)));
+  disconnect(styleAnalyser, SIGNAL(problematicLines(QSet<int>,QSet<int>)),
+             this, SLOT(onProblematicLines(QSet<int>,QSet<int>)));
+
+  styleAnalyser->deleteLater();
+  styleAnalyser = nullptr;
+}
+
+void Highlighter::onContentsChange([[maybe_unused]] int position, int removed, int added)
+{
+  if (added != removed) {
+    emit documentUpdated(document());
+  }
 }
 
 void Highlighter::onProblematicLines(QSet<int> errorLines, QSet<int> warningLines)
 {
-    if (this->errorLines==errorLines &&
-        this->warningLines==warningLines){
-      return;
+  if (this->errorLines==errorLines &&
+      this->warningLines==warningLines){
+    return;
+  }
+  QSet<int> changedLines = this->errorLines + errorLines +
+                           this->warningLines + warningLines;
+
+  this->errorLines=errorLines;
+  this->warningLines=warningLines;
+
+  if (document() != nullptr) {
+    for (int line: changedLines) {
+      QTextBlock block = document()->findBlockByLineNumber(line - 1);
+      rehighlightBlock(block);
     }
-    QSet<int> changedLines = this->errorLines + errorLines +
-                             this->warningLines + warningLines;
-
-    this->errorLines=errorLines;
-    this->warningLines=warningLines;
-
-    if (document() != nullptr) {
-      for (int line: changedLines) {
-        QTextBlock block = document()->findBlockByLineNumber(line - 1);
-        rehighlightBlock(block);
-      }
-    }
-
-    // FIXME: this is hack that should not be needed by documentation
-    // but rehighlightBlock don't update view for some reason
-    // setDocument do it immediately
-    setDocument(document());
+  }
 }

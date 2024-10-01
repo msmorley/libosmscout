@@ -20,10 +20,9 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <Highlighter.h>
-
 #include <osmscout/TypeConfig.h>
 
+#include <mutex>
 #include <QObject>
 #include <QSet>
 #include <QTextDocument>
@@ -33,28 +32,27 @@ class StyleAnalyser : public QObject
   Q_OBJECT
 
 signals:
+  void updateRequest(QTextDocument *doc);
   void problematicLines(QSet<int> errorLines, QSet<int> warningLines);
-  void updateRequest(QString content);
 
 public slots:
-  void onContentsChanged();
+  void onDocumentUpdated(QTextDocument *doc);
 
 private slots:
-  void update(QString content);
+  void update(QTextDocument *doc);
 
 public:
-  StyleAnalyser(QThread *thread,
-                QTextDocument *doc,
-                Highlighter &highlighter);
+  explicit StyleAnalyser(const QString& threadName);
   ~StyleAnalyser() override;
 
 private:
-  QThread *thread;
+  QThread *thread = nullptr;
   osmscout::TypeConfigRef typeConfig;
-  QTextDocument *doc; // not owned
-  QString lastContent;
+  QString styleSheetFilePath;
+
+  std::mutex lock;
+  mutable bool pending = false;
+  mutable bool delayed = false;
 };
-
-
 
 #endif //LIBOSMSCOUT_STYLEANALYSER_H

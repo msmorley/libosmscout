@@ -41,6 +41,9 @@ MapWidget::MapWidget(QQuickItem* parent)
     setOpaquePainting(true);
     setAcceptedMouseButtons(Qt::LeftButton);
     setAcceptHoverEvents(true);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    setAcceptTouchEvents(true);
+#endif
 
     renderer = OSMScoutQt::GetInstance().MakeMapRenderer(renderingType);
     auto settings=OSMScoutQt::GetInstance().GetSettings();
@@ -101,24 +104,23 @@ void MapWidget::translateToTouch(QMouseEvent* event, Qt::TouchPointStates states
 {
     assert(event);
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // translate the mouse event for desktop device without touch pointer
+    QTouchEvent touchEvnt(QEvent::TouchBegin, event->pointingDevice(), Qt::NoModifier, event->points());
+#else
     QTouchEvent::TouchPoint touchPoint;
     touchPoint.setPressure(1);
     touchPoint.setPos(event->pos());
     touchPoint.setState(states);
-#else
-    QEventPoint touchPoint(0, QEventPoint::Pressed, event->pos(), QPointF());
-#endif
-
     QList<QTouchEvent::TouchPoint> points;
     points << touchPoint;
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-    QTouchEvent touchEvnt(QEvent::TouchBegin,0, Qt::NoModifier, 0, points);
-#elif QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QTouchEvent touchEvnt(QEvent::TouchBegin, 0, Qt::NoModifier, Qt::TouchPointStates(), points);
 #else
-    QTouchEvent touchEvnt(QEvent::TouchBegin, 0, Qt::NoModifier, points);
+    QTouchEvent touchEvnt(QEvent::TouchBegin, 0, Qt::NoModifier, 0, points);
 #endif
+#endif
+
     //qDebug() << "translate mouse event to touch event: "<< touchEvnt;
     touchEvent(&touchEvnt);
 }
@@ -469,22 +471,22 @@ void MapWidget::move(QVector2D vector)
     }
 }
 
-void MapWidget::left()
+void MapWidget::moveLeft()
 {
     move(QVector2D( width()/-3, 0 ));
 }
 
-void MapWidget::right()
+void MapWidget::moveRight()
 {
     move(QVector2D( width()/3, 0 ));
 }
 
-void MapWidget::up()
+void MapWidget::moveUp()
 {
     move(QVector2D( 0, height()/-3 ));
 }
 
-void MapWidget::down()
+void MapWidget::moveDown()
 {
     move(QVector2D( 0, height()/+3 ));
 }
@@ -514,6 +516,15 @@ void MapWidget::rotateRight()
         setupInputHandler(new MoveHandler(*view));
         inputHandler->rotateBy(DELTA_ANGLE);
     }
+}
+
+void MapWidget::pivotBy(double angleChange)
+{
+  vehicle.lastGesture.restart();
+  if (!inputHandler->pivotBy(angleChange)){
+    setupInputHandler(new MoveHandler(*view));
+    inputHandler->pivotBy(angleChange);
+  }
 }
 
 void MapWidget::toggleDaylight()

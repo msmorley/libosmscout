@@ -34,6 +34,10 @@ osmscout_test_project(NAME ColorParse SOURCES src/ColorParse.cpp)
 #---- CoordinateEncoding
 osmscout_test_project(NAME CoordinateEncoding SOURCES src/CoordinateEncoding.cpp COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/data/testregion")
 
+#---- FileFormatVersion
+osmscout_test_project(NAME FileFormatVersion SOURCES src/FileFormatVersion.cpp)
+set_tests_properties(FileFormatVersion PROPERTIES ENVIRONMENT "TESTS_TOP_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
+
 #---- Latch
 osmscout_test_project(NAME Latch SOURCES src/Latch.cpp)
 
@@ -145,6 +149,9 @@ osmscout_test_project(NAME GeoCoordParse SOURCES src/GeoCoordParse.cpp)
 
 #---- NumberSet
 osmscout_test_project(NAME NumberSet SOURCES src/NumberSet.cpp)
+
+#---- ScanConversion
+osmscout_test_project(NAME RoutePostprocessor SOURCES src/RoutePostprocessor.cpp)
 
 #---- ScanConversion
 osmscout_test_project(NAME ScanConversion SOURCES src/ScanConversion.cpp)

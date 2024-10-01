@@ -94,11 +94,11 @@ Window {
                 event.accepted = true
             }
             else if (event.key === Qt.Key_Up) {
-                map.up()
+                map.moveUp()
                 event.accepted = true
             }
             else if (event.key === Qt.Key_Down) {
-                map.down()
+                map.moveDown()
                 event.accepted = true
             }
             else if (event.key === Qt.Key_Left) {
@@ -106,7 +106,7 @@ Window {
                     map.rotateLeft();
                 }
                 else {
-                    map.left();
+                    map.moveLeft();
                 }
                 event.accepted = true
             }
@@ -115,7 +115,7 @@ Window {
                     map.rotateRight();
                 }
                 else {
-                    map.right();
+                    map.moveRight();
                 }
                 event.accepted = true
             }
@@ -183,31 +183,36 @@ Window {
           }
         }
         MapButton{
-            label: "reset"
+            text: "reset"
+            Layout.preferredWidth: Theme.mapButtonHeight *3
             onClicked: {
                 simulator.track=PositionSimulationTrack;
             }
         }
         MapButton{
-            label: simulator.running ? "pause" : "resume"
+            text: simulator.running ? "pause" : "resume"
+            Layout.preferredWidth: Theme.mapButtonHeight *3
             onClicked: {
                 simulator.running=!simulator.running
             }
         }
         MapButton{
-            label: "+ 10s"
+            text: "+ 10s"
+            Layout.preferredWidth: Theme.mapButtonHeight *3
             onClicked: {
                 simulator.skipTime(10 * 1000);
             }
         }
         MapButton{
-            label: "+ minute"
+            text: "+ minute"
+            Layout.preferredWidth: Theme.mapButtonHeight *3
             onClicked: {
                 simulator.skipTime(60 * 1000);
             }
         }
         MapButton{
-            label: "+ hour"
+            text: "+ hour"
+            Layout.preferredWidth: Theme.mapButtonHeight *3
             onClicked: {
                 simulator.skipTime(3600 * 1000);
             }

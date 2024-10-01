@@ -172,6 +172,18 @@ File = executable('File',
 
 test('Check File utilities', File)
 
+FileFormatVersion = executable('FileFormatVersion',
+                  'src/FileFormatVersion.cpp',
+                  include_directories: [testIncDir, osmscoutIncDir],
+                  dependencies: [mathDep, openmpDep],
+                  link_with: [osmscout],
+                  install: true,
+                  install_dir: testInstallDir)
+
+test('Check FileFormatVersion APIs',
+     FileFormatVersion,
+     env: ['TESTS_TOP_DIR='+meson.current_source_dir()])
+
 FileScannerWriter = executable('FileScannerWriter',
              'src/FileScannerWriter.cpp',
              include_directories: [testIncDir, osmscoutIncDir],
@@ -384,6 +396,16 @@ ReaderScannerPerformance = executable('ReaderScannerPerformance',
              install_dir: testInstallDir)
 
 test('Check reader scanner performance', ReaderScannerPerformance, args : [meson.current_source_dir() + '/data/testregion'])
+
+RoutePostprocessor = executable('RoutePostprocessor',
+                            'src/RoutePostprocessor.cpp',
+                            include_directories: [testIncDir, osmscoutIncDir],
+                            dependencies: [mathDep, openmpDep],
+                            link_with: [osmscout],
+                            install: true,
+                            install_dir: testInstallDir)
+
+test('Check route postprocessor', RoutePostprocessor)
 
 ScanConversion = executable('ScanConversion',
              'src/ScanConversion.cpp',
