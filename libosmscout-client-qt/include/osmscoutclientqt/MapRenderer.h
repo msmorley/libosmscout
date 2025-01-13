@@ -33,6 +33,7 @@
 #include <QSettings>
 #include <QMutex>
 #include <QPainter>
+#include <QScreen>
 
 namespace osmscout {
 
@@ -97,6 +98,7 @@ protected:
 #endif
 
   double      mapDpi;
+  double      screenPixelRatio{1.0};
   bool        renderSea;
 
   QString     fontName;
@@ -166,6 +168,7 @@ public slots:
   virtual void Initialize() = 0;
 
   virtual void InvalidateVisualCache() = 0;
+  virtual void FlushVisualCaches(const std::chrono::milliseconds &idleMs) = 0;
   virtual void onStylesheetFilenameChanged();
   virtual void onDatabaseLoaded(osmscout::GeoBox boundingBox) = 0;
 
@@ -175,6 +178,8 @@ public slots:
   virtual void onFontSizeChanged(double);
   virtual void onShowAltLanguageChanged(bool);
   virtual void onUnitsChanged(const QString&);
+
+  virtual void SetScreen(const QScreen*);
 
 protected:
   MapRenderer(QThread *thread,

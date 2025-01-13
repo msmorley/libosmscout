@@ -142,7 +142,7 @@ private:
     QImage noGpsSignalIcon;
     QImage inTunnelIcon;
 
-    QImage getIcon()
+    QImage getIcon() const
     {
       if (position==nullptr){
         return QImage();
@@ -188,6 +188,9 @@ signals:
   void styleErrorsChanged();
   void databaseLoaded(osmscout::GeoBox);
   void renderingTypeChanged(QString type);
+  void screenChanged(QScreen*);
+
+  void objectPicked(const ObjectFileRef object);
 
 public slots:
   void changeView(const MapView &view);
@@ -276,6 +279,8 @@ public slots:
 
   void onIconFound(QPoint lookupCoord, MapIcon icon);
 
+  //void pick(double lat,double lon);
+
 private:
   Slot<double> mapDpiSlot{ std::bind(&MapWidget::onMapDPIChange, this, std::placeholders::_1) };
 
@@ -297,6 +302,11 @@ private:
     }
   };
 
+  Slot<std::chrono::milliseconds> flushCachesSlot {
+    std::bind(&MapWidget::FlushCaches, this, std::placeholders::_1)
+  };
+
+
 private slots:
 
   virtual void onTap(const QPoint p);
@@ -309,6 +319,8 @@ private slots:
 
   void onResize();
 
+  void onWindowChanged(QQuickWindow *window);
+
 private:
   void setupInputHandler(InputHandler *newGesture);
 
@@ -319,6 +331,8 @@ private:
    * @return approximated magnification by object dimension
    */
   osmscout::Magnification magnificationByDimension(const Distance &dimension);
+
+  void setupRenderer();
 
 public:
   MapWidget(QQuickItem* parent = nullptr);
@@ -529,6 +543,8 @@ public:
   {
     preventMouseStealing = b;
   }
+
+  void FlushCaches(const std::chrono::milliseconds &idleMs);
 
   /**
    * Helper for loading SVG graphics

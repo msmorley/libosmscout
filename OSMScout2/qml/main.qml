@@ -28,6 +28,15 @@ Window {
         dialog.open()
     }
 
+    function openObjectInfoDialog(object) {
+        var component = Qt.createComponent("ObjectInfoDialog.qml")
+        var dialog = component.createObject(mainWindow, {})
+
+        dialog.opened.connect(onDialogOpened)
+        dialog.closed.connect(onDialogClosed)
+        dialog.open()
+    }
+
     function openMapDownloadDialog() {
         var component = Qt.createComponent("MapDownloadDialog.qml")
         var dialog = component.createObject(mainWindow, {})
@@ -140,24 +149,29 @@ Window {
             TiledMapOverlay {
                 anchors.fill: parent
                 view: map.view
-                enabled: false
+                enabled: true
                 opacity: 0.5
-                // If you intend to use tiles from OpenMapSurfer services in your own applications please contact us.
-                // https://korona.geog.uni-heidelberg.de/contact.html
+                // Please consider own tile server hosting before usage of this source in your app
+                // https://www.karry.cz/en/karry/blog/2019/01/08/hillshade_tile_server/
                 provider: {
-                      "id": "ASTER_GDEM",
-                      "name": "Hillshade",
-                      "servers": [
-                        "https://korona.geog.uni-heidelberg.de/tiles/asterh/x=%2&y=%3&z=%1"
-                      ],
-                      "maximumZoomLevel": 18,
-                      "copyright": "© IAT, METI, NASA, NOAA",
+                    "id": "OSMSCOUT_HILLSHADE",
+                    "name": "Hillshade",
+                    "servers": [
+                        "https://osmscout.karry.cz/hillshade/tile.php?z=%1&x=%2&y=%3"
+                    ],
+                    "maximumZoomLevel": 19,
+                    "copyright": "© IAT, METI, NASA, NOAA",
                     }
             }
 
             onTap: {
                 console.log("tap: " + screenX + "x" + screenY + " @ " + lat + " " + lon + " (map center "+ map.view.lat + " " + map.view.lon + ")");
                 map.focus=true;
+
+                /*
+                if (pick.checked) {
+                    map.pick(lat,lon);
+                }*/
             }
             onLongTap: {
                 console.log("long tap: " + screenX + "x" + screenY + " @ " + lat + " " + lon);
@@ -172,6 +186,14 @@ Window {
             }
             onDatabaseLoaded: {
                 setupInitialPosition();
+            }
+
+            onObjectPicked: {
+                /*
+                if (pick.checked) {
+                    console.log("Object picked: " + object);
+                    openObjectInfoDialog(object)
+                }*/
             }
 
             Keys.onPressed: {
@@ -321,11 +343,22 @@ Window {
                 y: parent.height-height-Theme.vertSpace
 
                 spacing: Theme.mapButtonSpace
-/*
+
+                /*
                 MapButton {
-                    id: analysis
-                    checkable: true
+                    id: search
                     text: "🔍"
+
+                    onClicked: {
+                        //map.rotateTo(0);
+                    }
+                }*/
+
+                /*
+                MapButton {
+                    id: pick
+                    checkable: true
+                    text: "👁️"
 
                     onClicked: {
                         console.log("Toggle analysis mode "+checked);
