@@ -38,7 +38,7 @@
         },
         {
           "name": "OSMSCOUT_BUILD_MAP_SVG",
-          "value": "False",
+          "value": "True",
           "type": "BOOL"
         }
       ]
@@ -81,7 +81,7 @@
         },
         {
           "name": "OSMSCOUT_BUILD_MAP_SVG",
-          "value": "False",
+          "value": "True",
           "type": "BOOL"
         }
       ]
