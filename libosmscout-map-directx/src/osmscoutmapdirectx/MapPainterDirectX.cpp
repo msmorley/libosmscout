@@ -171,7 +171,7 @@ namespace osmscout
       }
       else
       {
-        result.back().glyph.width = textMetrics.width;
+        result.back().glyph.width = textMetrics.widthIncludingTrailingWhitespace;
         result.back().glyph.height = label.m_TextMetrics.height;
       }
 
