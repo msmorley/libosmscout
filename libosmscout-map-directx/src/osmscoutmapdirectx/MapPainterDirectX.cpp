@@ -645,6 +645,10 @@ namespace osmscout
     for (const auto& glyph : glyphs) {
         #ifdef MBUC
             std::wstring enc = glyph.glyph.character;
+            if (enc == L" ")
+            {
+				enc = wchar_t(0x2800);
+            }
         #else
             std::string enc = glyph.glyph.character;
         #endif
