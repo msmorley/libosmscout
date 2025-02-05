@@ -40,6 +40,21 @@
           "name": "OSMSCOUT_BUILD_MAP_SVG",
           "value": "True",
           "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_TOOL_STYLEEDITOR",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_MAP_QT",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_TOOL_PUBLICTRANSPORTMAP",
+          "value": "False",
+          "type": "BOOL"
         }
       ]
     },
@@ -81,6 +96,11 @@
         },
         {
           "name": "OSMSCOUT_BUILD_MAP_SVG",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "OSMSCOUT_BUILD_IMPORT_TOOL_FOR_DISTRIBUTION",
           "value": "True",
           "type": "BOOL"
         }

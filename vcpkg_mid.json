@@ -7,14 +7,10 @@
     "zlib",
     "libiconv",
     "libxml2",
-    "protobuf",
-    "cairo",
-    "pango",
-    "opengl",
-    "freeglut",
-    "glm",
+    "libpng",
     "glew",
-    "glfw3",
-    "qt5"
+    "glm",
+    "freetype",
+    "protobuf"
   ]
 }
