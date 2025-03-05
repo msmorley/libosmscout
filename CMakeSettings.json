@@ -28,7 +28,7 @@
         },
         {
           "name": "VCPKG_MANIFEST_DIR",
-          "value": "C:/Source/Libraries/libosmscout/libosmscout/",
+          "value": "${projectDir}",
           "type": "PATH"
         },
         {
@@ -55,6 +55,11 @@
           "name": "OSMSCOUT_BUILD_TOOL_PUBLICTRANSPORTMAP",
           "value": "False",
           "type": "BOOL"
+        },
+        {
+          "name": "VCPKG_INSTALLED_DIR",
+          "value": "${projectDir}/out/build/x64-Debug/vcpkg_installed",
+          "type": "PATH"
         }
       ]
     },
@@ -86,7 +91,7 @@
         },
         {
           "name": "VCPKG_MANIFEST_DIR",
-          "value": "C:/Source/Libraries/libosmscout/libosmscout/",
+          "value": "${projectDir}",
           "type": "PATH"
         },
         {
